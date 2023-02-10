@@ -115,7 +115,7 @@ namespace VCG_Objects
 
                     if (commandName == "Quit")
                     {
-                        Context.WebSocket.Send("Error<<StartRoomException:Sorry, This operation not available!");
+                        Context.WebSocket.Close();
                     }
 
                     if (commandName == "StartRoom")
