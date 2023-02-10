@@ -1,0 +1,43 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <OutputType>Exe</OutputType>
+    <TargetFramework>net6.0-windows10.0.22621.0</TargetFramework>
+    <RootNamespace>VCG_Server</RootNamespace>
+    <ImplicitUsings>enable</ImplicitUsings>
+    <Nullable>enable</Nullable>
+    <ApplicationIcon>icon.ico</ApplicationIcon>
+    <StartupObject>VCG_Server.ProgramEntry</StartupObject>
+    <GenerateDocumentationFile>False</GenerateDocumentationFile>
+    <Copyright></Copyright>
+    <SupportedOSPlatformVersion>7.0</SupportedOSPlatformVersion>
+  </PropertyGroup>
+
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|AnyCPU'">
+    <Optimize>False</Optimize>
+  </PropertyGroup>
+
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|AnyCPU'">
+    <Optimize>True</Optimize>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <Content Include="icon.ico" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <PackageReference Include="Pastel" Version="3.0.1" />
+    <PackageReference Include="Portable.BouncyCastle" Version="1.9.0" />
+    <PackageReference Include="System.Drawing.Common" Version="6.0.0" />
+    <PackageReference Include="WebSocketSharp" Version="1.0.3-rc11" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Folder Include="bin\Debug\net6.0\" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <None Include="..\.editorconfig" Link=".editorconfig" />
+  </ItemGroup>
+
+</Project>
