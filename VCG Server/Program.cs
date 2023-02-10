@@ -5,16 +5,22 @@ using WebSocketSharp.Server;
 using VCG_Objects;
 using VCG_Library;
 using WebSocketSharp.Net;
+using System.Text;
 
 namespace VCG_Server
 {
     public class Program : WebSocketBehavior
     {
         public Dictionary<int, Room> roomsWithkeys { get => ProgramEntry.roomsWithkeys; set => ProgramEntry.roomsWithkeys = value; }
-        public Dictionary<int, Room> publicRoomsWithkeys { get => ProgramEntry.publicRoomsWithkeys; set => ProgramEntry.roomsWithkeys = value; }
+        public Dictionary<int, Room> publicRoomsWithkeys { get => ProgramEntry.publicRoomsWithkeys; set { SendAll(ServerLib.ListRooms(Context, new dynamic[] { 20 })); ProgramEntry.publicRoomsWithkeys = value; } }
         //public List<Room> rooms = new List<Room>();
 
         public Dictionary<string, Player> playersByIDs { get => ProgramEntry.playersByIDs; set => ProgramEntry.playersByIDs = value; }
+
+        public void SendAll(string s)
+        {
+            Sessions.Broadcast(s);
+        }
 
         protected override void OnMessage(MessageEventArgs e)
         {

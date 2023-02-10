@@ -30,7 +30,8 @@ namespace VCG_Objects
         private Thread lobbyLoop;
         private Thread gameLoop;
 
-        public Card LastPlayerCard { get; private set; }
+        public Card LastPlayerCard { get; set; }
+        public Player PlayerWillPlay { get; private set; }
 
         public List<Card> DiscardPile = new List<Card>();
 
@@ -130,6 +131,7 @@ namespace VCG_Objects
                     {
                         Thread.Sleep(10);
                     }
+                    Debug.Log(player.Name + $" played card({LastPlayerCard.Type}, {LastPlayerCard.Figure})");
                     DiscardPile.Add(LastPlayerCard);
                     SendAll("CardPlayed<<"+LastPlayerCard);
                     LastPlayerCard = null;
@@ -142,16 +144,18 @@ namespace VCG_Objects
             IsStarted = true;
             if (IsPublic)
             {
+                ProgramEntry.publicRoomsWithkeys.Remove(this.Key);
                 ServerLib.RoomList = ServerLib.ListOfRooms(20);
             }
 
             Card[] cards = new Card[PlayerNum * 32];
             for (int p = 0; p < PlayerNum; p++)
             {
-                for (int c = 0; c < 31; c++)
+                for (int c = 0; c < 30; c++)
                 {
                     cards[(p * 32) + c] = Card.RandomUnpowered();
                 }
+                cards[(p * 32) + 30] = Card.RandomPowered();
                 cards[(p * 32) + 31] = Card.RandomPowered();
             }
             UnusedCards = cards.ToList();

@@ -42,7 +42,7 @@ namespace VCG_Objects
 
         public static readonly string[] Types = new string[] { "blue", "green", "orange", "yellow", "powered" };
 
-        public static Dictionary<string, CardType> CardTypes  = new Dictionary<string, CardType>();
+        public static Dictionary<string, CardType> CardTypes = new Dictionary<string, CardType>();
 
         public static readonly int PoweredFigures = 4;
         public static readonly int ColoredFigures = 13;
@@ -90,7 +90,8 @@ namespace VCG_Objects
 
         public static Card RandomUnpowered()
         {
-            return new Card(Types[random.Next(0, Types.Length - 1)], random.Next(0, ColoredFigures));
+            var rand = random.Next(0, ColoredFigures);
+            return new Card(Types[random.Next(0, Types.Length - 1)], rand == 10 ? 9 : rand);
         }
 
         public override string ToString()

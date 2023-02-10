@@ -11,7 +11,7 @@ using VCG_Library;
 
 namespace VCG_Objects
 {
-    public class RoomListener: WebSocketBehavior, IDisposable
+    public class RoomListener : WebSocketBehavior, IDisposable
     {
         public Room room { get; private set; }
 
@@ -31,7 +31,7 @@ namespace VCG_Objects
                 Player player = ProgramEntry.playersByIDs[sessionID];
                 player.RoomSocket = Context.WebSocket;
                 room.AddPlayer(player);
-                Context.WebSocket.Send("ConnectionRoom<<"+player.RoomName);
+                Context.WebSocket.Send("ConnectionRoom<<" + player.RoomName);
                 Context.WebSocket.Send(room.ListOfPlayers());
                 room.ListPlayers();
             }
@@ -116,6 +116,29 @@ namespace VCG_Objects
                     if (commandName == "Quit")
                     {
                         Context.WebSocket.Close();
+                    }
+
+                    if (commandName == "UseCard")
+                    {
+                        if (room.PlayerWillPlay == player)
+                        {
+                            if (args.Length == 1 && args[0] is int)
+                            {
+                                if (args[0])
+                                {
+                                    room.LastPlayerCard = room.PlayerWillPlay.Deck[args[0]];
+                                    room.PlayerWillPlay.Deck.RemoveAt(args[0]);
+                                    Context.WebSocket.Send("UseCard<<" + args[0]);
+                                    return;
+                                }
+                                Context.WebSocket.Send("Error<<UseCardException:Don't cheat!, I know you don't have this card");
+                                return;
+                            }
+                            Context.WebSocket.Send("Error<<UseCardException:Sorry, I didn't understand. Try again please. (But I'd be happier if you didn't try again)");
+                            return;
+                        }
+                        Context.WebSocket.Send("Error<<UseCardException:Don't be whine and wait your turn!");
+                        return;
                     }
 
                     if (commandName == "StartRoom")
