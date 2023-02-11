@@ -126,6 +126,11 @@ namespace VCG_Objects
                 }
                 foreach (Player player in PlayersWithGameOrder)
                 {
+                    if (Disposed)
+                    {
+                        return;
+                    }
+                    PlayerWillPlay = player;
                     player.RoomSocket.Send("Play<<Round");
                     while (LastPlayerCard == null)
                     {
@@ -163,11 +168,14 @@ namespace VCG_Objects
             foreach (Player player in Players)
             {
                 string str = "";
-                for (int c = 0; c < 8; c++)
+                lock (player.Deck)
                 {
-                    Card card = Card.Random(UnusedCards);
-                    player.Deck.Append(card);
-                    str += card + ",";
+                    for (int c = 0; c < 8; c++)
+                    {
+                        Card card = Card.Random(UnusedCards);
+                        player.Deck.Add(card);
+                        str += card + ",";
+                    }
                 }
                 player.Socket.Send("SetCards<<" + str.Remove(str.Length - 1));
             }
@@ -277,7 +285,8 @@ namespace VCG_Objects
 
             player.Room = null;
             player.RoomSocket = null;
-            Players.Remove(player);
+            if (Players.Contains(player))
+                Players.Remove(player);
             ListPlayers();
             return 1;
         }

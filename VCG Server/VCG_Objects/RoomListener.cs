@@ -124,7 +124,7 @@ namespace VCG_Objects
                         {
                             if (args.Length == 1 && args[0] is int)
                             {
-                                if (args[0])
+                                if (player.Deck.Count <= args[0] + 1)
                                 {
                                     room.LastPlayerCard = room.PlayerWillPlay.Deck[args[0]];
                                     room.PlayerWillPlay.Deck.RemoveAt(args[0]);
