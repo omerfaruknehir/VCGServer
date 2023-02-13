@@ -28,8 +28,7 @@ namespace VCG_Server
                 Debug.LogWarning("Server Started! Press \"CTRL+C\" to stop server.");
                 Console.CancelKeyPress += (sender, eventArgs) => {
                     wssv.Stop();
-                    Debug.LogWarning("Server Stopped! Press any key to close application.");
-                    Console.ReadKey(true);
+                    Debug.LogWarning("Server Stopped!");
                     Environment.Exit(0);
                 };
                 while (wssv.IsListening)

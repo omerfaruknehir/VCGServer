@@ -120,15 +120,20 @@ namespace VCG_Objects
 
                     if (commandName == "UseCard")
                     {
-                        if (room.PlayerWillPlay == player)
+                        if (room.PlayerWillPlay.ID == player.ID)
                         {
                             if (args.Length == 1 && args[0] is int)
                             {
-                                if (player.Deck.Count <= args[0] + 1)
+                                if (player.Deck.Count >= args[0] + 1)
                                 {
-                                    room.LastPlayerCard = room.PlayerWillPlay.Deck[args[0]];
-                                    room.PlayerWillPlay.Deck.RemoveAt(args[0]);
-                                    Context.WebSocket.Send("UseCard<<" + args[0]);
+                                    if (room.DiscardPile.Count == 0 || room.PlayerWillPlay.Deck[args[0]].CanPlayableOn(room.DiscardPile.Last()))
+                                    {
+                                        room.LastPlayerCard = room.PlayerWillPlay.Deck[args[0]];
+                                        room.PlayerWillPlay.Deck.RemoveAt(args[0]);
+                                        Context.WebSocket.Send("RemoveCard<<" + args[0]);
+                                        return;
+                                    }
+                                    Context.WebSocket.Send("Error<<UseCardException:I guess you're not readed game rules! (Read Under of Title: Which Cards Can Playable On Which Cards)");
                                     return;
                                 }
                                 Context.WebSocket.Send("Error<<UseCardException:Don't cheat!, I know you don't have this card");

@@ -94,6 +94,27 @@ namespace VCG_Objects
             return new Card(Types[random.Next(0, Types.Length - 1)], rand == 10 ? 9 : rand);
         }
 
+        public bool CanPlayableOn(Card card)
+        {
+            if (card.Type == this.Type)
+            {
+                return true;
+            }
+            if (card.Figure == this.Figure)
+            {
+                return true;
+            }
+            else if (this.Type == "Powered")
+            {
+                return true;
+            }
+            else if (this.Figure > 10 && card.Figure > 10)
+            {
+                return true;
+            }
+            return false;
+        }
+
         public override string ToString()
         {
             return Type + ":" + Figure;

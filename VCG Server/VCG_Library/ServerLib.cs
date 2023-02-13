@@ -20,6 +20,20 @@ namespace VCG_Library
         private static string sessionIDChars = "qwertypsdghjklzxcvbnm";
         public static Random random = new Random();
 
+        public static string DeckToString(List<Card> deck)
+        {
+            var str = "";
+            if (deck.Count == 0)
+                return str;
+
+            foreach (Card card in deck)
+            {
+                str += card + ",";
+            }
+
+            return str.Remove(str.Length - 1);
+        }
+
         public static string RandomSessionID()
         {
             while (true)

@@ -10,6 +10,7 @@ using WebSocketSharp.Server;
 using VCG_Library;
 using VCG_Server;
 using WebSocketSharp.Net.WebSockets;
+using Windows.Media.PlayTo;
 
 namespace VCG_Objects
 {
@@ -124,21 +125,82 @@ namespace VCG_Objects
                 {
                     return;
                 }
-                foreach (Player player in PlayersWithGameOrder)
+                int ind = 0;
+                while (ind < PlayersWithGameOrder.Count)
                 {
+                    Player player = PlayersWithGameOrder[ind];
+                    if (player.RoomSocket == null)
+                    {
+                        PlayersWithGameOrder.Remove(player);
+                        if (PlayerNum <= 1)
+                        {
+                            this.Dispose();
+                        }
+                        continue;
+                    }
+                    ind++;
                     if (Disposed)
                     {
                         return;
                     }
                     PlayerWillPlay = player;
-                    player.RoomSocket.Send("Play<<Round");
-                    while (LastPlayerCard == null)
+
+                    bool bl = false;
+
+                    if (DiscardPile.Count != 0)
                     {
-                        Thread.Sleep(10);
+                        foreach (Card card in player.Deck)
+                        {
+                            if (card.CanPlayableOn(DiscardPile.Last()))
+                            {
+                                bl = true;
+                                break;
+                            }
+                        }
                     }
+                    else
+                    {
+                        bl = true;
+                    }
+
+                    if (!bl)
+                    {
+                        var rand = Card.Random(UnusedCards);
+                        player.Deck.Add(rand);
+                        player.Socket.Send("SetCards<<" + ServerLib.DeckToString(player.Deck));
+                        if (!rand.CanPlayableOn(DiscardPile.Last()))
+                        {
+                            player.Socket.Send("Pass<<Round");
+                            continue;
+                        }
+                    }
+
+                    player.Socket.Send("Play<<Round");
+                    int i = 0;
+                    while (LastPlayerCard == null && i < 100)
+                    {
+                        Thread.Sleep(100);
+                        i++;
+                    }
+
+                    if (i >= 100)
+                    {
+                        player.Socket.Send("Pass<<Round");
+                        continue;
+                    }
+
+                    //if (LastPlayerCard.Type == "Powered")
+                    //{
+                    //    player.RoomSocket.Send("SelectColor<<");
+                    //}
+                    //while (LastSelectedColor == null)
+                    //{
+                    //    Thread.Sleep(100);
+                    //}
+
                     Debug.Log(player.Name + $" played card({LastPlayerCard.Type}, {LastPlayerCard.Figure})");
                     DiscardPile.Add(LastPlayerCard);
-                    SendAll("CardPlayed<<"+LastPlayerCard);
+                    SendAll("CardPlayed<<" + LastPlayerCard);
                     LastPlayerCard = null;
                 }
             }
@@ -180,16 +242,7 @@ namespace VCG_Objects
                 player.Socket.Send("SetCards<<" + str.Remove(str.Length - 1));
             }
 
-            PlayersWithGameOrder = new List<Player>(Players);
-            List<int> randomInts = new int[PlayersWithGameOrder.Count].ToList();
-            for (int i = 0; i < PlayersWithGameOrder.Count; i++)
-                randomInts[i] = i;
-            foreach (Player player in Players)
-            {
-                int i = ServerLib.random.Next(randomInts.Count - 1);
-                PlayersWithGameOrder[i] = player;
-                randomInts.RemoveAt(i);
-            }
+            PlayersWithGameOrder = Players.Shuffle();
 
             gameLoop.Start();
             SendAll("StartRoom<<NOW!");
@@ -296,12 +349,16 @@ namespace VCG_Objects
             if (Disposed)
                 return;
 
-            foreach (Player player in Players)
+            lock (Players)
             {
-                if (player is not null)
+                for (int i = 0; i < Players.Count; i++)
                 {
-                    player.Room = null;
-                    player.RoomSocket.Close();
+                    Player player = Players[i];
+                    if (player is not null)
+                    {
+                        player.Room = null;
+                        player.RoomSocket.Close();
+                    }
                 }
             }
 

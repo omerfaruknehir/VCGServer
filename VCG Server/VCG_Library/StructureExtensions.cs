@@ -25,6 +25,25 @@ namespace VCG_Library
         }
         //  Array
 
+        //  List
+        private static Random rng = new Random();
+
+        public static List<T> Shuffle<T>(this List<T> list)
+        {
+            var lst = new List<T>(list);
+            int n = lst.Count;
+            while (n > 1)
+            {
+                n--;
+                int k = rng.Next(n + 1);
+                T value = lst[k];
+                lst[k] = lst[n];
+                lst[n] = value;
+            }
+            return lst;
+        }
+        //  List
+
         //  Char
         public static bool IsInt(this char chr)
         {
