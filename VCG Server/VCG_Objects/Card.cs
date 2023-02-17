@@ -96,11 +96,7 @@ namespace VCG_Objects
 
         public bool CanPlayableOn(Card card)
         {
-            if (card.Type == this.Type)
-            {
-                return true;
-            }
-            if (card.Figure == this.Figure)
+            if (this.Type == card.Type || this.Figure == card.Figure)
             {
                 return true;
             }

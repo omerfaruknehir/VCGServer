@@ -170,14 +170,16 @@ namespace VCG_Objects
                         player.Socket.Send("SetCards<<" + ServerLib.DeckToString(player.Deck));
                         if (!rand.CanPlayableOn(DiscardPile.Last()))
                         {
+                            Thread.Sleep(1000);
                             player.Socket.Send("Pass<<Round");
                             continue;
                         }
                     }
 
+                    SendAll("Round<<" + player.RoomName);
                     player.Socket.Send("Play<<Round");
                     int i = 0;
-                    while (LastPlayerCard == null && i < 100)
+                    while (LastPlayerCard == null && i < 600)
                     {
                         Thread.Sleep(100);
                         i++;
