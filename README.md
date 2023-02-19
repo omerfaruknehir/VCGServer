@@ -5,4 +5,4 @@
 
   And this repo is server of VCG (Look client: [VCG](https://github.com/OFN01/VCG)).
 
-  This server made by C# (.NET 6.0)
+  This server made by C# ([.NET 6.0](https://dotnet.microsoft.com/en-us/download/dotnet/6.0))

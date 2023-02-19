@@ -252,11 +252,14 @@ namespace VCG_Objects
 
         public void SendAll(string str)
         {
-            foreach (Player player in Players)
+            lock (Players)
             {
-                if (player.RoomSocket != null && player.RoomSocket.IsAlive)
+                foreach (Player player in Players)
                 {
-                    player.RoomSocket.Send(str);
+                    if (player.RoomSocket != null && player.RoomSocket.IsAlive)
+                    {
+                        player.RoomSocket.Send(str);
+                    }
                 }
             }
         }
